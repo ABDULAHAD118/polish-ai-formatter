@@ -1,0 +1,16 @@
+{
+  "name": "whatsapp-ai-formatter",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "sync": "bash scripts/sync-config.sh",
+    "test": "npm run sync && node --test \"apps/chrome-extension/tests/*.test.mjs\"",
+    "test:mac": "bash scripts/test-mac.sh",
+    "live": "node scripts/live-check.mjs",
+    "build": "bash scripts/build-extension.sh && bash scripts/build-mac.sh"
+  },
+  "devDependencies": {
+    "jsdom": "^26.0.0"
+  }
+}

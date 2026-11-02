@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Polish AI: Message Formatter</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main>
+    <header>
+      <img src="../icons/icon48.png" width="40" height="40" alt="">
+      <div>
+        <h1>AI Message Formatter</h1>
+        <p id="status" class="status" role="status"><span class="dot"></span><span id="statusText">Not checked</span></p>
+      </div>
+    </header>
+
+    <section>
+      <label for="provider">AI provider</label>
+      <select id="provider"></select>
+      <p id="privacy" class="note"></p>
+
+      <div id="baseUrlRow">
+        <label for="baseUrl">Ollama address</label>
+        <input id="baseUrl" type="url" spellcheck="false">
+      </div>
+
+      <div id="apiKeyRow">
+        <label for="apiKey">API key</label>
+        <input id="apiKey" type="password" autocomplete="off" spellcheck="false">
+        <p class="note">Stored only in this Chrome profile. Sent only to the provider you selected.</p>
+      </div>
+
+      <label for="model">Model</label>
+      <input id="model" list="models" spellcheck="false">
+      <datalist id="models"></datalist>
+      <p id="modelHelp" class="note" hidden></p>
+    </section>
+
+    <section>
+      <label for="mode">Default formatting mode</label>
+      <select id="mode"></select>
+
+      <label for="customInstructions">Custom instructions</label>
+      <textarea id="customInstructions" rows="3" placeholder="Used by the Custom Instructions mode"></textarea>
+
+      <label for="timeoutSeconds">Request timeout (seconds)</label>
+      <input id="timeoutSeconds" type="number" min="10" max="600">
+    </section>
+
+    <div class="actions">
+      <button id="test" type="button">Test connection</button>
+      <button id="save" type="button" class="primary">Save settings</button>
+    </div>
+    <p id="saved" class="note" role="status"></p>
+  </main>
+  <script type="module" src="options.js"></script>
+</body>
+</html>
