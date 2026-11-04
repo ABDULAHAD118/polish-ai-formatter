@@ -145,6 +145,10 @@ func runSelfTest() -> Int32 {
     check("button sits at the composer's right edge", oneLine == NSRect(x: 468, y: 168, width: 28, height: 28))
     let tall = ComposerButton.frame(composer: CGRect(x: 100, y: 700, width: 400, height: 100), primaryScreenHeight: 1000)
     check("button stays on a tall composer's last line", tall.minY == 204)
+    let screens = [NSRect(x: 0, y: 0, width: 1000, height: 1000)]
+    check("button on a screen is placed", ComposerButton.isOnScreen(oneLine, screens: screens))
+    check("off-screen button is hidden", !ComposerButton.isOnScreen(NSRect(x: 5000, y: 5000, width: 28, height: 28), screens: screens))
+    check("non-finite button frame is hidden", !ComposerButton.isOnScreen(NSRect(x: CGFloat.nan, y: 0, width: 28, height: 28), screens: screens))
 
     // A private pasteboard, so the user's real clipboard is untouched by this test.
     let board = NSPasteboard(name: NSPasteboard.Name("waf-self-test"))

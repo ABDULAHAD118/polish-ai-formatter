@@ -177,6 +177,19 @@ final class ComposerButton {
     }
 
     func start() {
+        NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didActivateApplicationNotification, object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated {
+                self?.schedulePolling()
+                self?.refresh()
+            }
+        }
+        schedulePolling()
+    }
+
+    /// A timer whose callback throws an Objective-C exception never fires again, which would freeze the button on screen.
+    /// Re-arming on every app switch means one bad frame cannot outlive WhatsApp being active.
+    private func schedulePolling() {
+        timer?.invalidate()
         // shortcut: polling lags window drags by up to 0.25s, switch to AXObserver if that feels bad.
         timer = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated { self?.refresh() }
@@ -195,12 +208,23 @@ final class ComposerButton {
     private func refresh() {
         guard Accessibility.isTrusted, let app = Composer.frontmostWhatsApp(),
               let element = Composer.focusedElement(pid: app.processIdentifier), Composer.isComposer(element),
+              !Composer.isInMinimizedWindow(element),
               let composer = Composer.frame(element), let height = NSScreen.screens.first?.frame.height else {
             panel.orderOut(nil)
             return
         }
-        panel.setFrame(Self.frame(composer: composer, primaryScreenHeight: height), display: false)
+        let frame = Self.frame(composer: composer, primaryScreenHeight: height)
+        guard Self.isOnScreen(frame, screens: NSScreen.screens.map(\.frame)) else {
+            panel.orderOut(nil)
+            return
+        }
+        panel.setFrame(frame, display: false)
         panel.orderFrontRegardless()
+    }
+
+    /// Accessibility can report junk frames for windows that are going away, and AppKit throws on non-finite ones.
+    static func isOnScreen(_ frame: NSRect, screens: [NSRect]) -> Bool {
+        frame.origin.x.isFinite && frame.origin.y.isFinite && screens.contains { $0.intersects(frame) }
     }
 
     /// Accessibility frames start at the primary screen's top left, AppKit's at its bottom left.

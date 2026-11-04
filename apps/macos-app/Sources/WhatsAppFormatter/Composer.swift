@@ -62,6 +62,12 @@ enum Composer {
         return CGRect(origin: origin, size: extent)
     }
 
+    /// A minimized WhatsApp window can keep reporting its composer as focused.
+    static func isInMinimizedWindow(_ element: AXUIElement) -> Bool {
+        guard let window = attribute(element, kAXWindowAttribute), CFGetTypeID(window) == AXUIElementGetTypeID() else { return false }
+        return attribute(unsafeBitCast(window, to: AXUIElement.self), kAXMinimizedAttribute) as? Bool ?? false
+    }
+
     static func replaceWithAccessibility(_ element: AXUIElement, text: String, original: String) -> Bool {
         // Selecting then setting the selected text behaves like typing, so undo keeps working.
         var range = CFRange(location: 0, length: (original as NSString).length)
