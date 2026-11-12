@@ -1,4 +1,7 @@
-import { resolveSettings } from '../src/ai-core.js';
+import { isNewerVersion, resolveSettings } from '../src/ai-core.js';
+
+// The Windows and Linux apps load this page too, with their own stand-in for chrome.*.
+const chrome = globalThis.desktopChrome ?? globalThis.chrome;
 
 const config = await (await fetch(chrome.runtime.getURL('src/config.json'))).json();
 const $ = (id) => document.getElementById(id);
@@ -91,3 +94,29 @@ $('save').addEventListener('click', async () => {
   test();
 });
 test();
+
+// Unpacked extensions can't update themselves, so point at the new zip. The desktop apps load this
+// page without getManifest and use their own updater.
+async function checkForUpdate() {
+  const current = chrome.runtime.getManifest?.().version;
+  if (!current) return;
+  try {
+    const res = await fetch(`https://api.github.com/repos/${config.releasesRepo}/releases/latest`);
+    if (!res.ok) return;
+    const release = await res.json();
+    if (!isNewerVersion(release.tag_name, current)) return;
+    const zip = release.assets?.find((a) => a.name.endsWith('-extension.zip'));
+    const link = Object.assign(document.createElement('a'), {
+      href: zip?.browser_download_url ?? release.html_url, target: '_blank', rel: 'noopener', textContent: 'Download',
+    });
+    const notes = Object.assign(document.createElement('a'), {
+      href: release.html_url, target: '_blank', rel: 'noopener', textContent: 'What\'s new',
+    });
+    $('update').replaceChildren(`TextPolish ${release.tag_name} is available (you have ${current}). `, link, ' · ', notes,
+      document.createElement('br'), 'Unzip it over your current extension folder, then click Reload in chrome://extensions.');
+    $('update').hidden = false;
+  } catch {
+    // Offline or rate-limited: try again next time the page opens.
+  }
+}
+checkForUpdate();

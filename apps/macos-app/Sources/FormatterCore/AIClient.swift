@@ -26,6 +26,7 @@ public struct SharedConfig: Decodable, Sendable {
     public let providers: [String: Provider]
     public let modes: [Mode]
     public let systemPrompt: String
+    public let releasesRepo: String
 
     public static let shared: SharedConfig = {
         // Config ships in the binary, so a decode failure is a build error caught by CoreChecks.
@@ -33,6 +34,18 @@ public struct SharedConfig: Decodable, Sendable {
     }()
 
     public static let providerOrder = ["ollama", "claude", "openai", "gemini"]
+}
+
+/// True when release tag `candidate` (e.g. "v1.2.0") is a higher version than `current` ("1.1.9").
+public func isNewerVersion(_ candidate: String, than current: String) -> Bool {
+    func parts(_ v: String) -> [Int] {
+        v.trimmingCharacters(in: CharacterSet(charactersIn: "vV")).split(separator: ".").map { Int($0.prefix { $0.isNumber }) ?? 0 }
+    }
+    let a = parts(candidate), b = parts(current)
+    for i in 0..<max(a.count, b.count) where (i < a.count ? a[i] : 0) != (i < b.count ? b[i] : 0) {
+        return (i < a.count ? a[i] : 0) > (i < b.count ? b[i] : 0)
+    }
+    return false
 }
 
 public struct AIError: Error, Equatable, Sendable {

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { AIError, buildChatRequest, buildSystemPrompt, checkConnection, cleanOutput, formatDraft, parseChatResponse, resolveSettings, validateOutput } from '../src/ai-core.js';
+import { AIError, buildChatRequest, buildSystemPrompt, checkConnection, cleanOutput, formatDraft, isNewerVersion, parseChatResponse, resolveSettings, validateOutput } from '../src/ai-core.js';
 
 const config = JSON.parse(readFileSync(new URL('../../../packages/shared-config/config.json', import.meta.url)));
 const settingsFor = (provider, extra = {}) => resolveSettings({ provider, providers: { [provider]: { apiKey: 'k', ...extra } } }, config);
@@ -173,4 +173,11 @@ test('service worker modules have no top-level await, which Chrome refuses to re
     const topLevel = source.split('\n').filter((line) => /^\S/.test(line) && /\bawait\b/.test(line) && !/\basync\b/.test(line) && !line.startsWith('//'));
     assert.deepEqual(topLevel, [], file);
   }
+});
+
+test('update check compares versions numerically', () => {
+  assert.equal(isNewerVersion('v1.10.0', '1.9.2'), true);
+  assert.equal(isNewerVersion('v1.2.0', '1.2.0'), false);
+  assert.equal(isNewerVersion('1.2', '1.2.0'), false);
+  assert.equal(isNewerVersion('v1.1.9', '1.2.0'), false);
 });

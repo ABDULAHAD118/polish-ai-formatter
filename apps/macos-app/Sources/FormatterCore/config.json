@@ -1,5 +1,6 @@
 {
-  "appName": "WhatsApp AI Message Formatter",
+  "appName": "TextPolish",
+  "releasesRepo": "ABDULAHAD118/polish-ai-formatter",
   "whatsAppBundleId": "net.whatsapp.WhatsApp",
   "defaults": {
     "provider": "ollama",

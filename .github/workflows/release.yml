@@ -1,0 +1,125 @@
+# Builds every app and publishes one GitHub release named "TextPolish vX.Y.Z" with a changelog.
+# Release by pushing a tag (git tag v1.2.0 && git push origin v1.2.0) or with Run workflow.
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to release, for example 1.2.0
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  VERSION: ${{ inputs.version || github.ref_name }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm test
+
+  macos:
+    needs: test
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: node scripts/set-version.mjs "$VERSION"
+      - run: bash scripts/sync-config.sh && swift run --package-path apps/macos-app CoreChecks
+      - run: ARCHS="arm64 x86_64" bash scripts/build-mac.sh
+      - run: lipo -archs "dist/TextPolish.app/Contents/MacOS/WhatsAppFormatter"
+      - uses: actions/upload-artifact@v4
+        with: { name: macos, path: dist/TextPolish-macOS-universal.zip, if-no-files-found: error }
+
+  extension:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: node scripts/set-version.mjs "$VERSION"
+      - run: bash scripts/build-extension.sh
+      - uses: actions/upload-artifact@v4
+        with: { name: extension, path: dist/TextPolish-extension.zip, if-no-files-found: error }
+
+  windows:
+    needs: test
+    runs-on: windows-latest
+    defaults:
+      run: { shell: bash }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node scripts/set-version.mjs "$VERSION"
+      - run: bash scripts/sync-config.sh && cd apps/windows-app && npx electron-builder --win --x64 --publish never
+      # latest.yml and the blockmap are what the in-app updater reads.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          if-no-files-found: error
+          path: |
+            dist/windows/*.exe
+            dist/windows/*.exe.blockmap
+            dist/windows/latest.yml
+
+  linux:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node scripts/set-version.mjs "$VERSION"
+      - run: bash scripts/sync-config.sh && cd apps/linux-app && npx electron-builder --linux --x64 --publish never
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          if-no-files-found: error
+          path: |
+            dist/linux/*.AppImage
+            dist/linux/latest-linux.yml
+
+  release:
+    needs: [macos, extension, windows, linux]
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/download-artifact@v4
+        with: { path: files, merge-multiple: true }
+      - name: Write changelog
+        run: |
+          TAG="v${VERSION#v}"
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+          PREV=$(git describe --tags --abbrev=0 "${GITHUB_SHA}^" 2>/dev/null || true)
+          {
+            echo "## What's changed"
+            echo
+            git log --no-merges --pretty='- %s (%h)' "${PREV:+$PREV..}$GITHUB_SHA"
+            echo
+            echo "## Downloads"
+            echo
+            echo "| Platform | File |"
+            echo "| --- | --- |"
+            echo "| macOS (Apple Silicon and Intel) | \`TextPolish-macOS-universal.zip\` |"
+            echo "| Windows | \`TextPolish-Windows-Setup-${VERSION#v}.exe\` |"
+            echo "| Linux | \`TextPolish-Linux-${VERSION#v}-x86_64.AppImage\` |"
+            echo "| Chrome extension (any OS) | \`TextPolish-extension.zip\` |"
+            echo
+            [ -n "$PREV" ] && echo "**Full changelog:** https://github.com/${GITHUB_REPOSITORY}/compare/${PREV}...${TAG}"
+            true
+          } > notes.md
+          cat notes.md
+      - run: gh release create "$TAG" files/* --title "TextPolish $TAG" --notes-file notes.md --target "$GITHUB_SHA"

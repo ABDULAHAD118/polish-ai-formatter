@@ -290,3 +290,14 @@ export async function checkConnection({ settings, config, fetchImpl = fetch }) {
   const modelAvailable = models.includes(p.model) || models.includes(`${p.model}:latest`);
   return { models, modelAvailable, model: p.model };
 }
+
+// True when release tag `candidate` ("v1.2.0") is a higher version than `current` ("1.1.9").
+export function isNewerVersion(candidate, current) {
+  const parts = (v) => String(v).replace(/^v/i, '').split('.').map((n) => parseInt(n, 10) || 0);
+  const a = parts(candidate);
+  const b = parts(current);
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    if ((a[i] ?? 0) !== (b[i] ?? 0)) return (a[i] ?? 0) > (b[i] ?? 0);
+  }
+  return false;
+}

@@ -1,16 +1,26 @@
 {
-  "name": "whatsapp-ai-formatter",
+  "name": "textpolish",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
     "sync": "bash scripts/sync-config.sh",
     "test": "npm run sync && node --test \"apps/chrome-extension/tests/*.test.mjs\"",
     "test:mac": "bash scripts/test-mac.sh",
     "live": "node scripts/live-check.mjs",
-    "build": "bash scripts/build-extension.sh && bash scripts/build-mac.sh"
+    "build": "bash scripts/build-extension.sh && bash scripts/build-mac.sh",
+    "build:windows": "npm run dist -w apps/windows-app",
+    "build:linux": "npm run dist -w apps/linux-app",
+    "version:set": "node scripts/set-version.mjs"
   },
   "devDependencies": {
     "jsdom": "^26.0.0"
+  },
+  "workspaces": [
+    "apps/windows-app",
+    "apps/linux-app"
+  ],
+  "allowScripts": {
+    "electron-winstaller": false
   }
 }

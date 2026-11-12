@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Polish AI: Message Formatter</title>
+  <title>TextPolish: Message Formatter</title>
   <link rel="stylesheet" href="options.css">
 </head>
 <body>
@@ -11,10 +11,11 @@
     <header>
       <img src="../icons/icon48.png" width="40" height="40" alt="">
       <div>
-        <h1>AI Message Formatter</h1>
+        <h1>TextPolish</h1>
         <p id="status" class="status" role="status"><span class="dot"></span><span id="statusText">Not checked</span></p>
       </div>
     </header>
+    <p id="update" class="update" role="status" hidden></p>
 
     <section>
       <label for="provider">AI provider</label>
@@ -29,7 +30,7 @@
       <div id="apiKeyRow">
         <label for="apiKey">API key</label>
         <input id="apiKey" type="password" autocomplete="off" spellcheck="false">
-        <p class="note">Stored only in this Chrome profile. Sent only to the provider you selected.</p>
+        <p class="note">Stored only on this device. Sent only to the provider you selected.</p>
       </div>
 
       <label for="model">Model</label>

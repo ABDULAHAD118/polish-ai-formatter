@@ -31,4 +31,6 @@ button { padding: 7px 14px; border-radius: 8px; border: 1px solid var(--line); b
 button:hover { opacity: .85; }
 button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
 #saved { text-align: right; min-height: 18px; }
+.update { background: var(--card); border-left: 3px solid var(--accent); border-radius: 8px; padding: 8px 12px; margin: 0 0 12px; }
+.update a { color: var(--accent); font-weight: 500; }
 [hidden] { display: none !important; }

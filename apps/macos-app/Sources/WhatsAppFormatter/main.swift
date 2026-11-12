@@ -27,10 +27,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         if !Accessibility.isTrusted { openSettings() }
         composerButton.start()
+        Updater.check(userInitiated: false)
     }
 
     private static func icon(_ name: String) -> NSImage? {
-        let image = NSImage(systemSymbolName: name, accessibilityDescription: "WhatsApp AI Formatter")
+        let image = NSImage(systemSymbolName: name, accessibilityDescription: "TextPolish")
         image?.isTemplate = true
         return image
     }
@@ -59,6 +60,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let settings = NSMenuItem(title: "Settings…", action: #selector(openSettings), keyEquivalent: ",")
         settings.target = self
         menu.addItem(settings)
+        let update = NSMenuItem(title: "Check for Updates…", action: #selector(checkForUpdates), keyEquivalent: "")
+        update.target = self
+        menu.addItem(update)
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         item.menu = menu
@@ -81,6 +85,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if let id = sender.representedObject as? String { Settings.shared.mode = id }
     }
 
+    @objc private func checkForUpdates() {
+        Updater.check(userInitiated: true)
+    }
+
     @objc private func cancel() {
         if controller.isRunning { controller.trigger() }
     }
@@ -91,7 +99,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 self?.registerShortcut(shortcut) ?? .failed(-1)
             }
             let window = NSWindow(contentViewController: NSHostingController(rootView: view))
-            window.title = "WhatsApp AI Formatter"
+            window.title = "TextPolish"
             window.styleMask = [.titled, .closable, .miniaturizable]
             window.isReleasedWhenClosed = false
             window.center()

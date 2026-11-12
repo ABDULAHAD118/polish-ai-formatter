@@ -95,7 +95,7 @@ struct SettingsView: View {
                     }
                 }
                 if !trusted {
-                    Text("System Settings › Privacy & Security › Accessibility: turn on WhatsApp AI Formatter. It is used only to read and replace the draft in the focused message box.")
+                    Text("System Settings › Privacy & Security › Accessibility: turn on TextPolish. It is used only to read and replace the draft in the focused message box.")
                         .font(.caption).foregroundStyle(.secondary)
                 }
             }
@@ -114,7 +114,7 @@ struct SettingsView: View {
             }
 
             Section("About") {
-                Text("WhatsApp AI Message Formatter 1.0.0").font(.callout)
+                Text("TextPolish \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")").font(.callout)
                 Text("Rewrites only the unsent draft in the focused message box. It never sends messages and never stores drafts.")
                     .font(.caption).foregroundStyle(.secondary)
             }

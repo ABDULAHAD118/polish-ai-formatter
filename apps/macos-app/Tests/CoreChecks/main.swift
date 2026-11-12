@@ -31,6 +31,11 @@ let good = #"{"message":{"content":"Hello there."}}"#
 check("config: Ollama and qwen2.5:3b are the defaults", SharedConfig.shared.defaults.provider == "ollama" && SharedConfig.shared.providers["ollama"]?.defaultModel == "qwen2.5:3b")
 check("config: six modes with Professional as default", SharedConfig.shared.modes.count == 6 && SharedConfig.shared.defaults.mode == "professional")
 
+check("update: v1.10.0 is newer than 1.9.2", isNewerVersion("v1.10.0", than: "1.9.2"))
+check("update: same version is not newer", !isNewerVersion("v1.2.0", than: "1.2.0") && !isNewerVersion("1.2", than: "1.2.0"))
+check("update: older version is not newer", !isNewerVersion("v1.1.9", than: "1.2.0"))
+check("config: releases repo is owner/name", SharedConfig.shared.releasesRepo.split(separator: "/").count == 2)
+
 let okText = try await client(good).format(draft: "hello there", settings: settings())
 check("successful formatting", okText == "Hello there.")
 check("empty input", await failureCode { try await client(good).format(draft: "  ", settings: settings()) } == "empty_draft")

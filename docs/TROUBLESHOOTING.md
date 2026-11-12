@@ -31,7 +31,7 @@ Formatting failures never change your draft.
 - **Shortcut is used by another app.** Settings shows the conflict and keeps the working shortcut. Record a different one.
 - **Diagnostics.** To print the focused field's type without its text, switch to WhatsApp within 5 seconds of running:
   ```bash
-  sleep 5; "/Applications/WhatsApp AI Formatter.app/Contents/MacOS/WhatsAppFormatter" --ax-dump
+  sleep 5; "/Applications/TextPolish.app/Contents/MacOS/WhatsAppFormatter" --ax-dump
   ```
   Run this from a terminal that has Accessibility access.
 - **Launch at login fails.** Move the app to Applications first.
