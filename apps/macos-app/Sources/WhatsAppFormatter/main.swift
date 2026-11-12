@@ -10,6 +10,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let hud = HUD()
     private lazy var composerButton = ComposerButton { [weak self] in self?.controller.trigger() }
     private var settingsWindow: NSWindow?
+    private var updateTimer: Timer?
     private let cancelItem = NSMenuItem(title: "Cancel Formatting", action: #selector(cancel), keyEquivalent: "")
     private let shortcutItem = NSMenuItem(title: "", action: nil, keyEquivalent: "")
     private let modeMenu = NSMenu()
@@ -27,7 +28,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         if !Accessibility.isTrusted { openSettings() }
         composerButton.start()
-        Updater.check(userInitiated: false)
+        // A menu-bar app can run for weeks, so check daily, not only at launch.
+        if Settings.shared.autoCheckUpdates { Updater.check(userInitiated: false) }
+        updateTimer = Timer.scheduledTimer(withTimeInterval: 24 * 60 * 60, repeats: true) { _ in
+            MainActor.assumeIsolated { if Settings.shared.autoCheckUpdates { Updater.check(userInitiated: false) } }
+        }
     }
 
     private static func icon(_ name: String) -> NSImage? {

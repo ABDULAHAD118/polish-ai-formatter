@@ -82,6 +82,7 @@ final class Settings: ObservableObject {
     @Published var customInstructions: String { didSet { defaults.set(customInstructions, forKey: "customInstructions") } }
     @Published var timeoutSeconds: Double { didSet { defaults.set(timeoutSeconds, forKey: "timeoutSeconds") } }
     @Published var ollamaBaseUrl: String { didSet { defaults.set(ollamaBaseUrl, forKey: "ollamaBaseUrl") } }
+    @Published var autoCheckUpdates: Bool { didSet { defaults.set(autoCheckUpdates, forKey: "autoCheckUpdates") } }
     @Published var shortcut: Shortcut {
         didSet {
             defaults.set(Int(shortcut.keyCode), forKey: "shortcutKey")
@@ -96,6 +97,7 @@ final class Settings: ObservableObject {
         let timeout = defaults.double(forKey: "timeoutSeconds")
         timeoutSeconds = timeout > 0 ? timeout : config.defaults.timeoutSeconds
         ollamaBaseUrl = defaults.string(forKey: "ollamaBaseUrl") ?? config.providers["ollama"]!.baseUrl
+        autoCheckUpdates = defaults.object(forKey: "autoCheckUpdates") as? Bool ?? true
         if defaults.object(forKey: "shortcutKey") != nil {
             shortcut = Shortcut(keyCode: UInt32(defaults.integer(forKey: "shortcutKey")), carbonModifiers: UInt32(defaults.integer(forKey: "shortcutMods")))
         } else {

@@ -1,7 +1,7 @@
 {
   "name": "textpolish-windows",
   "productName": "TextPolish",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Rewrite your WhatsApp drafts with AI. Never sends messages.",
   "private": true,
   "type": "module",
@@ -23,7 +23,7 @@
     "files": ["main.mjs", "composer.mjs", "shared/**/*"],
     "icon": "shared/icon.png",
     "directories": { "output": "../../dist/windows" },
-    "publish": [{ "provider": "github", "owner": "ABDULAHAD118", "repo": "polish-ai-formatter" }],
+    "publish": [{ "provider": "github", "owner": "ABDULAHAD118", "repo": "textpolish" }],
     "win": { "target": "nsis", "artifactName": "TextPolish-Windows-Setup-${version}.${ext}" },
     "nsis": { "oneClick": true, "perMachine": false }
   }

@@ -28,7 +28,7 @@ npm run build
 ```
 
 - **Chrome:** open `chrome://extensions`, turn on Developer mode, click **Load unpacked**, and choose `dist/TextPolish-extension`.
-- **macOS:** move `dist/TextPolish.app` to Applications, open it, and allow Accessibility access.
+- **macOS:** double-click `dist/TextPolish-macOS-<arch>.pkg` to install, open TextPolish, and allow Accessibility access. Or download the `.pkg` from the latest release.
 
 Full steps: [docs/INSTALLATION.md](docs/INSTALLATION.md). Problems: [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md). Data handling: [docs/PRIVACY.md](docs/PRIVACY.md). Design: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 

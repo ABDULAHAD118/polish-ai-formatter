@@ -1,6 +1,6 @@
 {
   "appName": "TextPolish",
-  "releasesRepo": "ABDULAHAD118/polish-ai-formatter",
+  "releasesRepo": "ABDULAHAD118/textpolish",
   "whatsAppBundleId": "net.whatsapp.WhatsApp",
   "defaults": {
     "provider": "ollama",

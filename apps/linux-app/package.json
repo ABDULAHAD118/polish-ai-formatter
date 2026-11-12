@@ -1,7 +1,7 @@
 {
   "name": "textpolish-linux",
   "productName": "TextPolish",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Rewrite your WhatsApp drafts with AI. Never sends messages.",
   "private": true,
   "type": "module",
@@ -23,7 +23,7 @@
     "files": ["main.mjs", "composer.mjs", "shared/**/*"],
     "icon": "shared/icon.png",
     "directories": { "output": "../../dist/linux" },
-    "publish": [{ "provider": "github", "owner": "ABDULAHAD118", "repo": "polish-ai-formatter" }],
+    "publish": [{ "provider": "github", "owner": "ABDULAHAD118", "repo": "textpolish" }],
     "linux": { "target": "AppImage", "category": "Utility", "artifactName": "TextPolish-Linux-${version}-${arch}.${ext}" }
   }
 }

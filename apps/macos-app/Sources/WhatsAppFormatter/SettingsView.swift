@@ -113,6 +113,16 @@ struct SettingsView: View {
                 if !launchError.isEmpty { Text(launchError).font(.caption).foregroundStyle(.orange) }
             }
 
+            Section("Updates") {
+                Toggle("Automatically check for updates", isOn: $settings.autoCheckUpdates)
+                HStack {
+                    Text("Checks GitHub every day and asks before installing.")
+                        .font(.caption).foregroundStyle(.secondary)
+                    Spacer()
+                    Button("Check Now") { Updater.check(userInitiated: true) }
+                }
+            }
+
             Section("About") {
                 Text("TextPolish \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")").font(.callout)
                 Text("Rewrites only the unsent draft in the focused message box. It never sends messages and never stores drafts.")
@@ -120,7 +130,7 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 500, height: 660)
+        .frame(width: 500, height: 720)
         .onAppear { loadProvider(); test() }
         .onChange(of: settings.provider) { _ in loadProvider(); test() }
         .onReceive(trustTimer) { _ in trusted = Accessibility.isTrusted }

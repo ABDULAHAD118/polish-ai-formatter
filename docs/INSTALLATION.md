@@ -41,7 +41,7 @@ npm run build
 This creates:
 
 - `dist/TextPolish-extension/` and `dist/TextPolish-extension.zip`
-- `dist/TextPolish.app` and `dist/TextPolish-macOS-<arch>.zip`
+- `dist/TextPolish.app`, the installer `dist/TextPolish-macOS-<arch>.pkg`, and `dist/TextPolish-macOS-<arch>.zip` (used by the in-app updater)
 
 The macOS app is built for the architecture of the Mac that builds it. `ARCHS="arm64 x86_64" bash scripts/build-mac.sh` builds a universal app for Apple Silicon and Intel.
 
@@ -59,8 +59,8 @@ To use it: write a message, click **Format**, review the result, and send it you
 
 ## 4. Install the macOS app
 
-1. Move `TextPolish.app` to Applications.
-2. Open it. The app is not notarized, so macOS may block it the first time. If so, go to System Settings > Privacy & Security and click **Open Anyway**.
+1. Double-click `TextPolish-macOS-universal.pkg` and follow the installer. It puts TextPolish in Applications. The installer isn't signed, so macOS may block it the first time. If so, go to System Settings > Privacy & Security and click **Open Anyway**, then open it again.
+2. Open TextPolish from Applications.
 3. Settings opens. Click **Open System Settings** and turn on **TextPolish** under Privacy & Security > Accessibility.
 
 To use it: click in the WhatsApp message box and write a message. A green sparkles button appears at the right of the box. Click it or press `⌃⌥⌘F`, review the result, and send it yourself. Click **✕** or press the shortcut again to cancel. The sparkles icon in the menu bar has the mode list and Settings.

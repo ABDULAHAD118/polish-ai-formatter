@@ -25,5 +25,18 @@ cp "$ICONS/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
 # Set SIGN_IDENTITY to a Developer ID for distribution. "-" is an ad-hoc signature.
 codesign --force --deep --options runtime --sign "${SIGN_IDENTITY:--}" "$APP"
 codesign --verify "$APP"
+# The zip is what the in-app updater downloads.
 ditto -c -k --keepParent "$APP" "dist/TextPolish-macOS-$SUFFIX.zip"
+
+# Double-click installer that puts the app in /Applications.
+PKGROOT="$ICONS/pkgroot"
+mkdir -p "$PKGROOT"
+ditto "$APP" "$PKGROOT/TextPolish.app"
+pkgbuild --analyze --root "$PKGROOT" "$ICONS/component.plist" >/dev/null
+# Otherwise Installer "upgrades" any other copy with the same bundle ID (such as dist/) instead of /Applications.
+plutil -replace 0.BundleIsRelocatable -bool NO "$ICONS/component.plist"
+pkgbuild --root "$PKGROOT" --component-plist "$ICONS/component.plist" --install-location /Applications \
+  --identifier com.local.whatsapp-ai-formatter.pkg \
+  --version "$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$APP/Contents/Info.plist")" \
+  "dist/TextPolish-macOS-$SUFFIX.pkg"
 echo "Built $APP"

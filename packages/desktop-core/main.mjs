@@ -124,7 +124,8 @@ export function start(composer) {
 
   async function refreshTray() {
     if (!tray) return;
-    const settings = await loadSettings();
+    const stored = await loadStored();
+    const settings = resolveSettings(stored, config);
     tray.setToolTip(running ? 'TextPolish: formatting…' : 'TextPolish');
     tray.setContextMenu(Menu.buildFromTemplate([
       { label: running ? 'Cancel Formatting' : 'Format WhatsApp Draft', accelerator: SHORTCUT, click: trigger },
@@ -138,6 +139,10 @@ export function start(composer) {
       },
       { label: 'Settings…', click: openSettings },
       { label: 'Check for Updates…', click: () => checkForUpdates(true) },
+      {
+        label: 'Check for Updates Automatically', type: 'checkbox', checked: stored?.autoCheckUpdates !== false,
+        click: async (item) => { await saveStored({ ...((await loadStored()) ?? {}), autoCheckUpdates: item.checked }); },
+      },
       ...(process.platform === 'win32' ? [{
         label: 'Launch at Login', type: 'checkbox', checked: app.getLoginItemSettings().openAtLogin,
         click: (item) => app.setLoginItemSettings({ openAtLogin: item.checked }),
@@ -176,6 +181,8 @@ export function start(composer) {
       notify('Ctrl+Alt+F is used by another app. Use Format WhatsApp Draft in the tray menu instead.');
     }
     if (!(await loadStored())) openSettings();
-    checkForUpdates(false);
+    const autoCheck = async () => { if ((await loadStored())?.autoCheckUpdates !== false) checkForUpdates(false); };
+    autoCheck();
+    setInterval(autoCheck, 24 * 60 * 60 * 1000); // A tray app can run for weeks.
   });
 }

@@ -37,7 +37,12 @@ jobs:
       - run: ARCHS="arm64 x86_64" bash scripts/build-mac.sh
       - run: lipo -archs "dist/TextPolish.app/Contents/MacOS/WhatsAppFormatter"
       - uses: actions/upload-artifact@v4
-        with: { name: macos, path: dist/TextPolish-macOS-universal.zip, if-no-files-found: error }
+        with:
+          name: macos
+          if-no-files-found: error
+          path: |
+            dist/TextPolish-macOS-universal.pkg
+            dist/TextPolish-macOS-universal.zip
 
   extension:
     needs: test
@@ -113,7 +118,7 @@ jobs:
             echo
             echo "| Platform | File |"
             echo "| --- | --- |"
-            echo "| macOS (Apple Silicon and Intel) | \`TextPolish-macOS-universal.zip\` |"
+            echo "| macOS (Apple Silicon and Intel) | \`TextPolish-macOS-universal.pkg\` (installer) |"
             echo "| Windows | \`TextPolish-Windows-Setup-${VERSION#v}.exe\` |"
             echo "| Linux | \`TextPolish-Linux-${VERSION#v}-x86_64.AppImage\` |"
             echo "| Chrome extension (any OS) | \`TextPolish-extension.zip\` |"
